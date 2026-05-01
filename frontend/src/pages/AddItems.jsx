@@ -36,30 +36,17 @@ function AddItems() {
 
     const    fileInputRef = useRef(null)
     const handleImage=(e) => {
-    console.log("handleImage called");
     const file = e.target.files[0]
-    console.log("Selected file:", file);
     if(file) {
         setBackendImage(file)
         setFrontendImage(URL.createObjectURL(file))
-        console.log("Image states updated");
-    } else {
-        console.log("No file selected");
     }
 }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-            console.log("Current backendImage state:", backendImage);
-    console.log("Current frontendImage state:", frontendImage);
-     // Try getting file directly from input
-    const fileInput = fileInputRef.current;
-    const file = fileInput?.files?.[0];
-    console.log("File from input ref:", file);
-
 
         const formData = new FormData()
-        console.log("zero")
         try {
             formData.append("name",name)
             formData.append("category",category)
@@ -69,14 +56,9 @@ function AddItems() {
                 formData.append("image",backendImage)
                 console.log("image file sent",backendImage)
             }
-            else{
-                console.log("no image file sent")
-            }
-            console.log("first")
             const result = await axios.post(`${serverUrl}/api/item/add-item`,formData,{withCredentials:true})
             dispatch(setMyShopData(result?.data))
             console.log(result?.data)
-            console.log("second")
         } catch (error) {
             console.log(error)
         }
