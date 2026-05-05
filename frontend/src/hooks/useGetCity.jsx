@@ -20,7 +20,12 @@ function useGetCity() {
       dispatch(setCurrentState(result?.data?.results[0]?.state))
       dispatch(setCurrentAddress(result?.data?.results[0]?.address_line2 || 
       result?.data?.results[0]?.address_line1))
-    });
+    },null, {
+        enableHighAccuracy: true, // 🔥 important
+        timeout: 10000,
+        maximumAge: 0,
+      });
+   
   }, [userData]);
 }
 
