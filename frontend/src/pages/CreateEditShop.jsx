@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { serverUrl } from '../App';
 import { setMyShopData } from '../redux/ownerSlice';
+import { ClipLoader } from "react-spinners";
 
 
 
@@ -20,6 +21,7 @@ function CreateEditShop() {
     const[state,setState]= useState(myShopData?.state || currentState)
     const[frontendImage,setFrontendImage]= useState(myShopData?.image || null)
     const[backendImage,setBackendImage]= useState(null)
+    const[loading,setLoading]=useState(false)
     const dispatch = useDispatch()
 
     const handleImage=(e) => {
@@ -30,8 +32,9 @@ function CreateEditShop() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const formData = new FormData()
+        setLoading(true)
         try {
+            const formData = new FormData()
             formData.append("name",name)
             formData.append("city",city)
             formData.append("state",state)
@@ -41,9 +44,11 @@ function CreateEditShop() {
             }
             const result = await axios.post(`${serverUrl}/api/shop/create-edit`,formData,{withCredentials:true})
             dispatch(setMyShopData(result?.data))
-            console.log(result.data)
+            setLoading(false)
+            Navigate("/")
         } catch (error) {
             console.log(error)
+            setLoading(false)
         }
     }
 
@@ -107,8 +112,10 @@ function CreateEditShop() {
                     value={address} />
                 </div>
                 <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold
-                shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer'>
-                    Save
+                shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer'
+                disabled={loading}>
+                    
+                    {loading?<ClipLoader size={20} color='white'/>:"Save"}
                 </button>
             </form>
         </div>

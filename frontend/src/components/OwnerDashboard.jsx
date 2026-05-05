@@ -4,15 +4,11 @@ import { useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import {Navigate, useNavigate } from "react-router-dom";
 import { FaPen } from "react-icons/fa";
-import OwnerItemCard from "./ownerItemCard";
+import OwnerItemCard from "./OwnerItemCard";
 
 function OwnerDashboard() {
   const { myShopData } = useSelector((state) => state.owner);
   const navigate = useNavigate();
-
-    console.log("myShopData:", myShopData); // Add this
-  console.log("items length:", myShopData?.items?.length); // Add this
-  console.log("items:", myShopData?.items); // Add this
 
   return (
     <div className="w-full min-h-screen bg-[#fff9f6] flex flex-col items-center">
@@ -105,14 +101,9 @@ function OwnerDashboard() {
           </div>
         </div>}
 
-{console.log("About to check items length:", myShopData.items.length)}
-{console.log("Items length ==1:", myShopData.items.length > 0)}
 
-
-        {myShopData.items.length>0 && 
+        {myShopData.items.length>0 &&
         <div className='flex flex-col items-center gap-4 w-full max-w-3xl'>
-
-          {console.log("Inside items map, about to render OwnerItemCard")}
           
           {myShopData?.items?.map((item, index)=>(
             <OwnerItemCard data={item} key={index} />

@@ -10,6 +10,7 @@ import useGetCity from './hooks/useGetCity'
 import useGetMyShop from './hooks/useGetMyShop'
 import CreateEditShop from './pages/CreateEditShop'
 import AddItems from './pages/AddItems'
+import EditItems from './pages/EditItems'
 export const serverUrl="http://localhost:8000"
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
     <Route path='/' element={ userData?<Home/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/create-edit-shop' element={ userData?<CreateEditShop/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/add-item' element={ userData?<AddItems/>:<Navigate to ={"/siqnin"}/>} />
+    <Route path='/edit-item/:itemId' element={ userData?<EditItems/>:<Navigate to ={"/siqnin"}/>} />
 
 </Routes>
   )

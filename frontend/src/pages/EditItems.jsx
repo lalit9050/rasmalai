@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaUtensils } from "react-icons/fa";
 import { IoMdArrowBack } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { serverUrl } from '../App';
 import { setMyShopData } from '../redux/ownerSlice';
 import { ClipLoader } from "react-spinners";
@@ -11,16 +11,18 @@ import { ClipLoader } from "react-spinners";
 
 
 
-function AddItems() {
+function EditItems() {
+    const[currentItem,setCurrentItem]=useState(null)
     const navigate = useNavigate()
     const {myShopData}= useSelector(state=>state.owner)
+    const {itemId} = useParams()
     const[name,setName]= useState("")
     const[price,setPrice]= useState("")
-    const[frontendImage,setFrontendImage]= useState(null)
+    const[frontendImage,setFrontendImage]= useState( null)
     const[backendImage,setBackendImage]= useState(null)
     const[category,setCategory]=useState("")
     const[foodtype,setFoodType]=useState("veg")
-    const[loading,setLoading]=useState(false)
+    const[loading,setLoading]= useState(false)
     const categories=["Snacks",
         "Main Course",
         "Desserts",
@@ -56,8 +58,9 @@ function AddItems() {
             formData.append("price",price)
             if(backendImage){
                 formData.append("image",backendImage)
+                console.log("image file sent",backendImage)
             }
-            const result = await axios.post(`${serverUrl}/api/item/add-item`,formData,{withCredentials:true})
+            const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`,formData,{withCredentials:true})
             dispatch(setMyShopData(result?.data))
             setLoading(false)
             navigate("/")
@@ -66,6 +69,26 @@ function AddItems() {
             setLoading(false)
         }
     }
+
+    useEffect(()=>{
+        const handleGetItemById = async () => {
+            try {
+                const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`,{withCredentials:true})
+                setCurrentItem(result?.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        handleGetItemById()
+    },[itemId])
+
+    useEffect(()=>{
+        setName(currentItem?.name || "")
+        setPrice(currentItem?.price || "")
+        setCategory(currentItem?.category || "")
+        setFoodType(currentItem?.foodType || "")
+        setFrontendImage(currentItem?.image || "")
+    },[currentItem])
 
   return (
     <div className='flex justify-center flex-col items-center p-6 bg-linear-to-br relative
@@ -79,7 +102,7 @@ function AddItems() {
                     <FaUtensils className='text-[#ff4d2d] w-16 h-16' />
                 </div>
                 <div className='text-3xl font-extrabold text-gray-900'>
-                    Add Food
+                    Edit Food
                 </div>
             </div>
             <form className='space-y-5' onSubmit={handleSubmit}>
@@ -141,7 +164,7 @@ function AddItems() {
                 <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold
                 shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer'
                 disabled={loading}>
-                    {loading?<ClipLoader size={20} color='white'/>:'Save'}
+                    {loading?<ClipLoader size={20} color='white'/>:"Save"}
                 </button>
             </form>
         </div>
@@ -149,4 +172,4 @@ function AddItems() {
   )
 }
 
-export default AddItems
+export default EditItems
