@@ -13,20 +13,28 @@ function useGetCity() {
     navigator.geolocation.getCurrentPosition(async (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
+      console.log(latitude)
+      console.log(longitude)
       const result = await axios.get(
         `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apikey}`,
       );
-      dispatch(setCurrentCity(result?.data?.results[0]?.city))
-      dispatch(setCurrentState(result?.data?.results[0]?.state))
-      dispatch(setCurrentAddress(result?.data?.results[0]?.address_line2 || 
-      result?.data?.results[0]?.address_line1))
+      const data = result?.data?.results[0];
+      const city =
+        data?.city ||
+        data?.town ||
+        data?.village ||
+        data?.county ||
+        data?.state;
+      dispatch(setCurrentCity(city))
+      dispatch(setCurrentState(data?.state))
+      dispatch(setCurrentAddress(data?.address_line2 || 
+      data?.address_line1))
     },null, {
         enableHighAccuracy: true, // 🔥 important
         timeout: 10000,
         maximumAge: 0,
       });
-   
-  }, [userData]);
+  }, []);
 }
 
 export default useGetCity;
