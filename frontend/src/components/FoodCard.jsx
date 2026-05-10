@@ -17,8 +17,9 @@ function FoodCard({data}) {
         const stars=[];
         for(let i=1;i<=5;i++){
             stars.push(
-                (i<=rating)?(<FaStar className='text-yellow-500 text-lg ' />)
-                :(<FaRegStar className='text-yellow-500 text-lg' />)
+                (i<=rating)
+                ?(<FaStar key={i} className='text-yellow-500 text-lg ' />)
+                :(<FaRegStar key={i} className='text-yellow-500 text-lg' />)
             )
         }
         return stars;

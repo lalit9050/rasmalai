@@ -29,7 +29,7 @@ function useGetCity() {
         data?.state;
       dispatch(setCurrentCity(city))
       dispatch(setCurrentState(data?.state))
-      dispatch(setCurrentAddress(data?.address_line2 || 
+      dispatch(setCurrentAddress(data?.address_line1 || 
       data?.address_line1))
       
       dispatch(setAddress(data?.address_line2))
