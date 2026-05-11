@@ -30,6 +30,9 @@ function CheckOut() {
     const { location, address } = useSelector(state => state.map)
     const {cartItems, totalAmount} = useSelector(state=>state.user)
     const apikey = import.meta.env.VITE_GEOAPIKEY
+    const serverUrl = import.meta.env.VITE_SERVER_URL
+
+    
     
     const deliveryFee = totalAmount>500?0:40
     const AmountWithDeliveryFee = totalAmount + deliveryFee
@@ -66,6 +69,24 @@ function CheckOut() {
             const result = await axios.get(` https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(addressInput)}&apiKey=${apikey}`)
             const { lat, lon } = result?.data?.features[0].properties
             dispatch(setLocation({ lat, lon }))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handlePlaceOrder = async () => {
+        try {
+            const result = await axios.post(`${serverUrl}/api/order/place-order`,{
+                paymentMethod,
+                deliveryAddress:{
+                    text:addressInput,
+                    latitude:location.lat,
+                    longitude:location.lon
+                },
+                totalAmount,
+                cartItems
+            },{withCredentials:true})
+            navigate("/order-placed")
         } catch (error) {
             console.log(error)
         }
@@ -166,7 +187,7 @@ function CheckOut() {
                     </div>
                     </div>
                 </section>
-                <button className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer'>
+                <button className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer' onClick={handlePlaceOrder}>
                     {paymentMethod=="cod"?"Place Order":"Pay & Place Order"}
                 </button>
 

@@ -6,6 +6,7 @@ const shopOrderItemSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Item"
     },
+    name:String,
     price:Number,
     quantity:Number
 
@@ -21,7 +22,7 @@ const shopOrderSchema= new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
-    subTotal:Number,
+    subtotal: Number,
     shopOrderItems:[shopOrderItemSchema]
 
 
@@ -41,17 +42,13 @@ const orderSchema = new mongoose.Schema({
     deliveryAddress:{
         text:String,
         latitude:Number,
-        longitude:Number,
-        required:true
+        longitude:Number
     },
     totalAmount:{
         type:Number,
         required:true
     },
-    shopOrder:[shopOrderSchema]
-
-
-
+    shopOrders:[shopOrderSchema]
 },{ timestamps: true })
 
 const Order = mongoose.model("Order",orderSchema)

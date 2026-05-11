@@ -23,10 +23,13 @@ export const addItem = async (req, res) => {
         });
         shop.items.push(item._id);
         await shop.save();
-        await shop.populate("owner").populate({
-            path: "items",
-            options: { sort: { updatedAt: -1 } },
-        });
+        await shop.populate([
+            { path: "owner" },
+            {
+                path: "items",
+                options: { sort: { updatedAt: -1 } },
+            },
+        ]);
 
         return res.status(201).json(shop);
     } catch (error) {
@@ -111,9 +114,9 @@ export const getItemByCity = async (req, res) => {
         if (!shops) {
             return res.status(400).json({ message: "Shops not found " });
         }
-        const shopIds = shops.map((shop)=>shop._id)
-        
-        const items = await Item.find({shop:{$in:shopIds}})
+        const shopIds = shops.map((shop) => shop._id)
+
+        const items = await Item.find({ shop: { $in: shopIds } })
         return res.status(200).json(items);
     } catch (error) {
         return res.status(500).json({ message: `get item by city error ${error}` });

@@ -62,9 +62,12 @@ function AddItems() {
             setLoading(false)
             navigate("/")
         } catch (error) {
-            console.log(error)
+            console.log(error.response?.data)
+    console.log(error)
             setLoading(false)
-        }
+        } finally {
+        setLoading(false)
+    }
     }
 
   return (
