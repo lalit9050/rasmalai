@@ -2,7 +2,9 @@ import React from 'react'
 
 function MyOrders() {
   return (
-    <div>MyOrders</div>
+    <div className=''>
+
+    </div>
   )
 }
 
