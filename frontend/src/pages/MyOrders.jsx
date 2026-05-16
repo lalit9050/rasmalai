@@ -6,7 +6,7 @@ import UserOrderCard from '../components/UserOrderCard'
 import OwnerOrderCard from '../components/OwnerOrderCard'
 
 function MyOrders() {
-  const { userData, MyOrders } = useSelector(state => state.user)
+  const { userData, myOrders } = useSelector(state => state.user)
   const navigate = useNavigate()
 
   return (
@@ -20,7 +20,7 @@ function MyOrders() {
         </div>
 
         <div className='space-y-6'>
-          {MyOrders?.map((order,index)=>(
+          {myOrders?.map((order,index)=>(
             userData.role=="user"
             ?(
               <UserOrderCard data={order} key={index}/>
