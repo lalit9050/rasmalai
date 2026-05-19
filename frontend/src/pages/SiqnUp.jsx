@@ -176,8 +176,9 @@ function SiqnUp() {
             role
           </label>
           <div className="flex gap-2">
-            {["user" , "owner", "delivery boy"].map((r)=>(
+            {["user" , "owner", "deliveryBoy"].map((r)=>(
               <button 
+              key={r}
               className="flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors cursor-pointer"
               onClick={()=>setRole(r)}
               style={

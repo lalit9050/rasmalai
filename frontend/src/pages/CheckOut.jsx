@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import "leaflet/dist/leaflet.css"
 import { setAddress, setLocation } from '../redux/mapSlice';
 import axios from 'axios';
+import { addMyOrder } from '../redux/userSlice';
 
 function RecenterMap({ location }) {
     if (location.lat && location.lon) {
@@ -86,6 +87,7 @@ function CheckOut() {
                 totalAmount,
                 cartItems
             },{withCredentials:true})
+            dispatch(addMyOrder(result.data))
             navigate("/order-placed")
         } catch (error) {
             console.log(error)
