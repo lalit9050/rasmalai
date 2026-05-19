@@ -99,12 +99,14 @@ function Nav() {
                     </div>
                 </> : (
                     <>
-                        <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+                    {userData.role=="user" &&
+                    <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
                             <IoCartOutline size={25} className="text-[#ff4d2d]" />
                             <span className="absolute right-[-9px] top-[-12px] text-[#ff4d2d] ">
                                 {cartItems.length}
                             </span>
-                        </div>
+                        </div> }
+                        
 
                         <button
                             className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]
@@ -126,8 +128,8 @@ function Nav() {
                 </div>
                 {showInfo && (
                     <div
-                        className="fixed top-[80px] right-[10px] md:right-[10%] lg:right-[25%] w-[180px] bg-white
-        shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-20"
+                        className={`fixed top-[80px] right-[10px] ${userData.role=="deliveryBoy"?"md:right-[20%] lg:right-[40%]":"md:right-[10%] lg:right-[25%]"} w-[180px] bg-white
+        shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-20`}
                     >
                         <div className="text-[17px] font-semibold">{userData.fullName}</div>
                         {userData.role == "user" &&
