@@ -19,6 +19,7 @@ import OrderPlaced from './pages/OrderPlaced'
 import MyOrders from './pages/MyOrders'
 import useGetMyOrders from './hooks/useGetMyOrders'
 import useUpdateLocation from './hooks/useUpdateLocation'
+import TrackOrderPage from './pages/TrackOrderPage'
 
 export const serverUrl="http://localhost:8000"
 
@@ -44,6 +45,8 @@ function App() {
     <Route path='/checkout' element={ userData?<CheckOut/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/order-placed' element={ userData?<OrderPlaced/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/my-orders' element={ userData?<MyOrders/>:<Navigate to ={"/siqnin"}/>} />
+    <Route path='/track-order/:orderId' element={ userData?<TrackOrderPage/>:<Navigate to ={"/siqnin"}/>} />
+
     
 
 
