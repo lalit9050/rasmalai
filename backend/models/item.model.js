@@ -12,7 +12,7 @@ const itemSchema = new mongoose.Schema(
     },
     shop: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "shop",
+      ref: "Shop",
       required: true,
     },
     category: {

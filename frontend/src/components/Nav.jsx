@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaLocationDot, FaPlus } from "react-icons/fa6";
 import { IoCartOutline } from "react-icons/io5";
@@ -7,7 +7,7 @@ import { LuReceiptIndianRupee } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { serverUrl } from "../App";
-import { setUserData } from "../redux/userSlice";
+import { setSearchItems, setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 
@@ -16,6 +16,7 @@ function Nav() {
     const { myShopData } = useSelector((state) => state.owner);
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [query,setQuery]= useState("")
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -27,6 +28,22 @@ function Nav() {
             console.log(error)
         }
     }
+    const handleSearchItems = async () => {
+        try {
+            const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, { withCredentials: true })
+            dispatch(setSearchItems(result?.data))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(()=>{
+        if(query){
+            handleSearchItems()
+        }
+        else{
+            dispatch(setSearchItems(null))
+        }
+    },[query])
     return (
         <div
             className="w-full h-[80px] flex items-center justify-between md:justify-center
@@ -44,7 +61,7 @@ function Nav() {
                             type="text"
                             placeholder="Search your favorite food"
                             className="px-[10px] text-gray-700
-                outline-0 w-full "
+                outline-0 w-full "  onChange={(e)=>setQuery(e.target.value)} value={query}
                         />
                     </div>
                 </div>
@@ -63,7 +80,7 @@ function Nav() {
                         type="text"
                         placeholder="Search your favorite food"
                         className="px-[10px] text-gray-700
-                outline-0 w-full "
+                outline-0 w-full " onChange={(e)=>setQuery(e.target.value)} value={query}
                     />
                 </div>
             </div>}
@@ -84,7 +101,7 @@ function Nav() {
                         </button> </>}
 
                     <div className=" hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg
-                    bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={()=>navigate("/my-orders")}>
+                    bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={() => navigate("/my-orders")}>
                         <LuReceiptIndianRupee size={20} />
                         <span>Pending Orders</span>
                         <span className="absolute  -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] 
@@ -93,20 +110,20 @@ function Nav() {
                     <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg 
                     bg-[#ff4d2d]/10 
                     text-[#ff4d2d] font-medium">
-                        <LuReceiptIndianRupee size={20} onClick={()=>navigate("/my-orders")} />
+                        <LuReceiptIndianRupee size={20} onClick={() => navigate("/my-orders")} />
                         <span className="absolute  -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] 
                     rounded-full px-[6px] py:1px">0</span>
                     </div>
                 </> : (
                     <>
-                    {userData.role=="user" &&
-                    <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
-                            <IoCartOutline size={25} className="text-[#ff4d2d]" />
-                            <span className="absolute right-[-9px] top-[-12px] text-[#ff4d2d] ">
-                                {cartItems.length}
-                            </span>
-                        </div> }
-                        
+                        {userData.role == "user" &&
+                            <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+                                <IoCartOutline size={25} className="text-[#ff4d2d]" />
+                                <span className="absolute right-[-9px] top-[-12px] text-[#ff4d2d] ">
+                                    {cartItems.length}
+                                </span>
+                            </div>}
+
 
                         <button
                             className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]
@@ -128,7 +145,7 @@ function Nav() {
                 </div>
                 {showInfo && (
                     <div
-                        className={`fixed top-[80px] right-[10px] ${userData.role=="deliveryBoy"?"md:right-[20%] lg:right-[40%]":"md:right-[10%] lg:right-[25%]"} w-[180px] bg-white
+                        className={`fixed top-[80px] right-[10px] ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[40%]" : "md:right-[10%] lg:right-[25%]"} w-[180px] bg-white
         shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-20`}
                     >
                         <div className="text-[17px] font-semibold">{userData.fullName}</div>
