@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SiqnUp from './pages/SiqnUp'
 import SiqnIn from './pages/SiqnIn'
 import ForgotPassword from './pages/ForgotPassword'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Home from './pages/Home'
 import useGetCity from './hooks/useGetCity'
 import useGetMyShop from './hooks/useGetMyShop'
@@ -21,6 +21,8 @@ import useGetMyOrders from './hooks/useGetMyOrders'
 import useUpdateLocation from './hooks/useUpdateLocation'
 import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
+import { io } from 'socket.io-client'
+import { setSocket } from './redux/userSlice'
 
 export const serverUrl="http://localhost:8000"
 
@@ -32,7 +34,22 @@ function App() {
   useGetShopByCity()
   useGetItemsByCity()
   useGetMyOrders()
+
   const {userData} = useSelector(state=>state.user)
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    const socketInstance = io(serverUrl,{withCredentials:true})
+    dispatch(setSocket(socketInstance))
+    socketInstance.on('connect',()=>{
+      if(userData){
+        socketInstance.emit('identity',{userId:userData._id})
+      }
+    })
+    return ()=>{
+      socketInstance.disconnect()
+    }
+  },[userData?._id])
   return (
 <Routes>
     <Route path='/siqnup' element={!userData?<SiqnUp/>:<Navigate to={"/"}/> } />

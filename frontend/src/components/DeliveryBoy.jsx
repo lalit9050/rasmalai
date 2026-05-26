@@ -8,11 +8,36 @@ import { useState } from 'react'
 import DeliveryBoyTracking from './DeliveryBoyTracking'
 
 function DeliveryBoy() {
-  const {userData} = useSelector(state=>state.user)
+  const {userData, socket} = useSelector(state=>state.user)
   const[currentOrder,setCurrentOrder]= useState()
   const[showOtpBox,setShowOtpBox]= useState(false)
   const [availableAssignments,setAvailableAssignments]= useState(null)
   const [otp,setOtp]= useState("")
+
+  useEffect(()=>{
+    if(!socket || userData.role !=="deliveryBoy") return
+    let watchId
+    if(navigator.geolocation){
+      watchId= navigator.geolocation.watchPosition((position)=>{
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
+        socket.emit('updateLocation',{
+          latitude,
+          longitude,
+          userId:userData._id
+        })
+      }),
+      (error)=>{
+        console.log(error)
+      },
+      {
+        enableHighAccuracy:true
+      }
+    }
+    return ()=>{
+      if(watchId)navigator.geolocation.clearWatch(watchId)
+    }
+  },[socket,userData])
   
   const getAssignments= async () => {
     try {
@@ -59,7 +84,17 @@ function DeliveryBoy() {
     }
   }
 
-  
+  useEffect(()=>{
+    socket?.on('newAssignment',(data)=>{
+      if(data.sentTo==userData._id){
+        setAvailableAssignments(prev=>[...prev,data])
+      }
+    })
+    return ()=>{
+      socket?.off('newAssignments')
+    }
+  },[socket])
+
   
   useEffect(()=>{
     getAssignments()
