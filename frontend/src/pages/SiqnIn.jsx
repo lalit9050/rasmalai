@@ -44,9 +44,9 @@ function SiqnIn() {
   }
     const handleGoogleAuth=async () => {
     
-      const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
       try {
+        const provider = new GoogleAuthProvider()
+        const result = await signInWithPopup(auth, provider)
         const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
         email:result.user.email,
         },{withCredentials:true})

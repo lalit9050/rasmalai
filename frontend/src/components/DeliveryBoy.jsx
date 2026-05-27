@@ -13,6 +13,8 @@ function DeliveryBoy() {
   const[showOtpBox,setShowOtpBox]= useState(false)
   const [availableAssignments,setAvailableAssignments]= useState(null)
   const [otp,setOtp]= useState("")
+  const [deliveryBoyLocation,setDeliveryBoyLocation] = useState(null)
+const [otpError, setOtpError] = useState("")
 
   useEffect(()=>{
     if(!socket || userData.role !=="deliveryBoy") return
@@ -21,6 +23,7 @@ function DeliveryBoy() {
       watchId= navigator.geolocation.watchPosition((position)=>{
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
+        setDeliveryBoyLocation({lat:latitude,lon:longitude})
         socket.emit('updateLocation',{
           latitude,
           longitude,
@@ -60,6 +63,8 @@ function DeliveryBoy() {
     try {
       const result = await axios.get(`${serverUrl}/api/order/accept-order/${assignmentId}`,{withCredentials:true})
       console.log(result?.data)
+      await getCurrentOrder()
+      setAvailableAssignments([])
     } catch (error) {
       console.log(error)
     }
@@ -79,10 +84,18 @@ function DeliveryBoy() {
     try {
       const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp `,{orderId:currentOrder._id,shopOrderId:currentOrder.shopOrder._id,otp},{withCredentials:true})
       console.log(result?.data)
+      setCurrentOrder(null)
+        setShowOtpBox(false)
+        setOtp("")
+        await getAssignments()
     } catch (error) {
-      console.log(error)
+        if (error?.response?.data?.message) {
+            setOtpError(error.response.data.message)
+        } else {
+            setOtpError("Something went wrong")
+        }
     }
-  }
+}
 
   useEffect(()=>{
     socket?.on('newAssignment',(data)=>{
@@ -111,9 +124,9 @@ function DeliveryBoy() {
           </h1>
           <p className='text-[#ff4d2d]'>
             <span className='font-semibold'>Latitude:</span> 
-            {userData.location.coordinates[1]},
+            {deliveryBoyLocation?.lat},
             <span className='font-semibold'>Longitude: </span> 
-            {userData.location.coordinates[0]}
+            {deliveryBoyLocation?.lon}
           </p>
         </div>
 
@@ -151,13 +164,29 @@ function DeliveryBoy() {
               <p className='text-xs text-gray-500'>{currentOrder?.shopOrder?.shopOrderItems.length} items | {currentOrder.shopOrder.subtotal} </p>
             </div>
 
-          <DeliveryBoyTracking data={currentOrder}/>
-          {!showOtpBox ? <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200' onClick={sendOtp}>
+          <DeliveryBoyTracking data={
+            {
+              deliveryBoyLocation:  deliveryBoyLocation ||
+          {
+            lat:userData.location.coordinates[1],
+            lon:userData.location.coordinates[0]
+          },
+          customerLocation:{
+            lat:currentOrder.deliveryAddress.latitude,
+            lon:currentOrder.deliveryAddress.longitude
+          }
+        }
+      }/>
+          {!showOtpBox ? <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer' onClick={sendOtp}>
             Mark As Delivered
           </button> : <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
             <p className='text-sm font-semibold mb-2'>Enter OTP sent to <span className='text-orange-500'>{currentOrder.user.fullName}</span></p>
-            <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter OTP' onChange={(e)=>setOtp(e.target.value)} value={otp}/>
-            <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 tracking-all' onClick={verifyOtp}>Submit OTP</button>
+            <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter OTP' onChange={(e)=>{
+              setOtp(e.target.value)
+              setOtpError("")
+              }} value={otp}/>
+              {otpError && <p className='text-red-500 text-sm mb-2'>*{otpError}</p>}
+            <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 tracking-all cursor-pointer' onClick={verifyOtp}>Submit OTP</button>
             </div>}
           
         </div>}
