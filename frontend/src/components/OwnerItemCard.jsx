@@ -33,7 +33,7 @@ function OwnerItemCard({data}) {
                 <p><span className='font-medium text-gray-70'>FoodType: </span>{data.foodType}</p>
             </div>
             <div className='flex items-center justify-between'>
-                <div className='text-bold text-[#ff4d2d]'>{data.price}</div>
+                <div className='text-bold text-[#ff4d2d]'>₹{data.price}</div>
 
                 <div className='flex items-center gap-2'>
 
