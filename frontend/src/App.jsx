@@ -24,7 +24,7 @@ import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
 import { setSocket, addMyOrder, updateRealtimeOrderStatus,assignDeliveryBoy } from './redux/userSlice'
 
-export const serverUrl="http://localhost:8000"
+export const serverUrl="https://rasmalai-backend-d2o7.onrender.com"
 
 function App() {
   useGetCurrentUser()
