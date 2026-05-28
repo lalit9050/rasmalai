@@ -77,21 +77,36 @@ const userSlice= createSlice({
                 }
             }
         },
-        updateRealtimeOrderStatus:(state,action)=>{
-            const {orderId,shopId,status} = action.payload
-            const order = state.myOrders.find(o=>o._id==orderId)
-            if(order){
-                const shopOrder = order.shopOrders.find(so=>so.shop._id==shopId)
-                if(shopOrder){
-                    shopOrder.status= status
-                }
+        updateRealtimeOrderStatus: (state, action) => {
+    const { orderId, shopId, status } = action.payload
+    const order = state.myOrders.find(o => o._id == orderId)
+    if (order) {
+        if (Array.isArray(order.shopOrders)) {
+
+            const shopOrder = order.shopOrders.find(so => String(so.shop._id) === String(shopId))
+            if (shopOrder) shopOrder.status = status
+        } else {
+
+            if (String(order.shopOrders?.shop?._id) === String(shopId)) {
+                order.shopOrders.status = status
             }
-        },
+        }
+    }
+},
+assignDeliveryBoy: (state, action) => {
+    const { orderId, shopId, deliveryBoy } = action.payload
+    const order = state.myOrders.find(o => o._id == orderId)
+    if (order) {
+        if (String(order.shopOrders?.shop?._id) === String(shopId)) {
+            order.shopOrders.assignedDeliveryBoy = deliveryBoy
+        }
+    }
+},
         setSearchItems:(state,action)=>{
             state.searchItems= action.payload
         }
     }
 })
 
-export const {setUserData, setCurrentCity, setCurrentState,setCurrentAddress,setShopsInMyCity,setItemsInMyCity,addToCart,updateQuantity,removeCartItem,setMyOrders,addMyOrder,updateOrderStatus,setSearchItems,setSocket,updateRealtimeOrderStatus} = userSlice.actions
+export const {setUserData, setCurrentCity, setCurrentState,setCurrentAddress,setShopsInMyCity,setItemsInMyCity,addToCart,updateQuantity,removeCartItem,setMyOrders,addMyOrder,updateOrderStatus,setSearchItems,setSocket,updateRealtimeOrderStatus,assignDeliveryBoy} = userSlice.actions
 export default userSlice.reducer

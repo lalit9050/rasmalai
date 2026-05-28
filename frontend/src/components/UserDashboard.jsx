@@ -11,77 +11,77 @@ import { useNavigate } from 'react-router-dom';
 import { serverUrl } from '../App';
 
 function UserDashboard() {
-  const {currentCity,shopsInMyCity,itemsInMyCity,searchItems} =useSelector(state=>state.user)
+  const { currentCity, shopsInMyCity, itemsInMyCity, searchItems } = useSelector(state => state.user)
   const cateScrollRef = useRef()
   const shopScrollRef = useRef()
   const navigate = useNavigate()
-  const[showLeftCateButton,setShowLeftCateButton]= useState(false)
-  const[showRightCateButton,setShowRightCateButton]= useState(false)
-  const[showLeftShopButton,setShowLeftShopButton]= useState(false)
-  const[showRightShopButton,setShowRightShopButton]= useState(false)
-  const[updatedItemsList,setUpdatedItemsList] = useState([])
+  const [showLeftCateButton, setShowLeftCateButton] = useState(false)
+  const [showRightCateButton, setShowRightCateButton] = useState(false)
+  const [showLeftShopButton, setShowLeftShopButton] = useState(false)
+  const [showRightShopButton, setShowRightShopButton] = useState(false)
+  const [updatedItemsList, setUpdatedItemsList] = useState([])
 
-  const handleFilterByCategory = (category)=>{
-    if(category==="All"){
+  const handleFilterByCategory = (category) => {
+    if (category === "All") {
       setUpdatedItemsList(itemsInMyCity)
-    } else{
-      const filteredList = itemsInMyCity?.filter(i=>i.category===category)
+    } else {
+      const filteredList = itemsInMyCity?.filter(i => i.category === category)
       setUpdatedItemsList(filteredList)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setUpdatedItemsList(itemsInMyCity)
-  },[itemsInMyCity])
+  }, [itemsInMyCity])
 
-  const updateButton =(ref,setLeftButton,setRightButton)=>{
+  const updateButton = (ref, setLeftButton, setRightButton) => {
     const element = ref.current
-    if(element){
-      setLeftButton(element.scrollLeft>0)
-      setRightButton(element.scrollLeft+element.clientWidth<element.scrollWidth)
+    if (element) {
+      setLeftButton(element.scrollLeft > 0)
+      setRightButton(element.scrollLeft + element.clientWidth < element.scrollWidth)
     }
   }
-  const scrollHandler=(ref,direction)=>{
-    if(ref.current){
+  const scrollHandler = (ref, direction) => {
+    if (ref.current) {
       ref.current.scrollBy({
-        left:direction=="left"?-200:200,
-        behavior:"smooth"
+        left: direction == "left" ? -200 : 200,
+        behavior: "smooth"
       })
     }
   }
-  useEffect(()=>{
-    if(cateScrollRef.current){
-      updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
-      updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
-      cateScrollRef.current.addEventListener('scroll',()=>{
-        updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
+  useEffect(() => {
+    if (cateScrollRef.current) {
+      updateButton(cateScrollRef, setShowLeftCateButton, setShowRightCateButton)
+      updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
+      cateScrollRef.current.addEventListener('scroll', () => {
+        updateButton(cateScrollRef, setShowLeftCateButton, setShowRightCateButton)
       })
 
-      shopScrollRef.current.addEventListener('scroll',()=>{
-        updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
+      shopScrollRef.current.addEventListener('scroll', () => {
+        updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
       })
-        
+
     }
-    
-    return ()=>{
-      cateScrollRef?.current?.removeEventListener("scroll",()=>{
-        updateButton(cateScrollRef,setShowLeftCateButton,setShowRightCateButton)
+
+    return () => {
+      cateScrollRef?.current?.removeEventListener("scroll", () => {
+        updateButton(cateScrollRef, setShowLeftCateButton, setShowRightCateButton)
       })
-      shopScrollRef?.current?.removeEventListener("scroll",()=>{
-        updateButton(shopScrollRef,setShowLeftShopButton,setShowRightShopButton)
+      shopScrollRef?.current?.removeEventListener("scroll", () => {
+        updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
       })
     }
-  },[categories])
+  }, [categories])
   return (
     <div className='w-screen min-h-screen flex flex-col gap-5 bg-[#fff9f6] items-center overflow-y-auto'>
-      <Nav/>
+      <Nav />
 
-      {searchItems && searchItems.length>0 && (
+      {searchItems && searchItems.length > 0 && (
         <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-4'>
           <h1 className='text-gray-900 text-2xl sm:text=3xl font-semibold border-b border-gray-200 pb-2'>Search Results</h1>
           <div className='w-full h-auto flex flex-wrap gap-6 justify-center'>
-            {searchItems.map((item)=>(
-              <FoodCard data={item} key={item._id}/>
+            {searchItems.map((item) => (
+              <FoodCard data={item} key={item._id} />
             ))}
           </div>
         </div>
@@ -90,59 +90,71 @@ function UserDashboard() {
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
         <h1 className='text-gray-800 text-2xl sm:text-3xl'>Inspiration for your first order</h1>
         <div className='w-full relative'>
-          {showLeftCateButton &&  <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
-          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={()=>scrollHandler(cateScrollRef,"left")}>
+          {showLeftCateButton && <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
+          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={() => scrollHandler(cateScrollRef, "left")}>
             <FaCircleChevronLeft />
           </button>}
-        
+
           <div className='w-full flex overflow-x-auto gap-4 pb-2' ref={cateScrollRef}>
-            {categories.map((cate,index)=>(
-            <CategoryCard name={cate.category} image={cate.image} key={index} onClick={()=>handleFilterByCategory(cate.category)}/>
-          ))}
+            {categories.map((cate, index) => (
+              <CategoryCard name={cate.category} image={cate.image} key={index} onClick={() => handleFilterByCategory(cate.category)} />
+            ))}
           </div>
           {showRightCateButton && <button className='absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
-          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={()=>scrollHandler(cateScrollRef,"right")}>
+          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={() => scrollHandler(cateScrollRef, "right")}>
             <FaCircleChevronRight />
-          </button> }
-          
+          </button>}
+
         </div>
-        
+
       </div>
 
       <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
         <h1 className='text-gray-800 text-2xl sm:text-3xl'>Best Shop in {currentCity}</h1>
+
+        {shopsInMyCity?.length === 0 && (
+          <div className='w-full flex flex-col items-center justify-center py-16 bg-white rounded-2xl shadow-sm'>
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" className='w-32 h-32 opacity-40 mb-4' />
+            <h2 className='text-xl font-semibold text-gray-500'>No shops in {currentCity} yet</h2>
+            <p className='text-gray-400 text-sm mt-1'>We're expanding soon. Check back later!</p>
+          </div>
+        )}
+
         <div className='w-full relative'>
-          {showLeftShopButton &&  <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
-          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={()=>scrollHandler(shopScrollRef,"left")}>
+          {showLeftShopButton && <button className='absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
+          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={() => scrollHandler(shopScrollRef, "left")}>
             <FaCircleChevronLeft />
           </button>}
-         
+
           <div className='w-full flex overflow-x-auto gap-4 pb-2' ref={shopScrollRef}>
-            {shopsInMyCity?.map((shop,index)=>(
-            <CategoryCard name={shop.name} image={shop.image} key={index} onClick={()=>navigate(`/shop/${shop._id}`)}/>
-          ))}
+            {shopsInMyCity?.map((shop, index) => (
+              <CategoryCard name={shop.name} image={shop.image} key={index} onClick={() => navigate(`/shop/${shop._id}`)} />
+            ))}
           </div>
           {showRightShopButton && <button className='absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full
-          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={()=>scrollHandler(shopScrollRef,"right")}>
+          shadow-lg hover:bg-[#e64528] z-10 cursor-pointer'onClick={() => scrollHandler(shopScrollRef, "right")}>
             <FaCircleChevronRight />
-          </button> }
-          
-        </div>
-        
-      </div>
-
-      <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
-        <h1 className='text-gray-800 text-2xl sm:text-3xl'>
-          Popular Items
-        </h1>
-        <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
-          {updatedItemsList?.map((item,index)=>{
-          return <FoodCard key={index} data ={item}/>
-          })}
+          </button>}
 
         </div>
 
       </div>
+
+      {shopsInMyCity?.length > 0 && (
+
+        <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
+          <h1 className='text-gray-800 text-2xl sm:text-3xl'>
+            Popular Items
+          </h1>
+          <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
+            {updatedItemsList?.map((item, index) => {
+              return <FoodCard key={index} data={item} />
+            })}
+
+          </div>
+        </div>
+      )}
+
 
     </div>
   )

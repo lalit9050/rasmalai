@@ -367,6 +367,23 @@ export const acceptOrder = async (req, res) => {
         shopOrder.assignedDeliveryBoy = req.userId
         await order.save()
 
+        const deliveryBoy = await User.findById(req.userId)
+        const shop = await Shop.findById(assignment.shop)
+        const shopOrderOwner = await User.findById(shopOrder.owner)
+
+        const io = req.app.get('io')
+        if (io && shopOrderOwner?.socketId) {
+            io.to(shopOrderOwner.socketId).emit('delivery-boy-assigned', {
+                orderId: order._id,
+                shopId: shopOrder.shop,
+                deliveryBoy: {
+                    _id: deliveryBoy._id,
+                    fullName: deliveryBoy.fullName,
+                    mobile: deliveryBoy.mobile
+                }
+            })
+        }
+
         return res.status(200).json({ message: 'Order accepted successfully' })
 
     } catch (error) {
@@ -502,8 +519,72 @@ export const verifyDeliveryOtp = async (req, res) => {
             assignedTo: shopOrder.assignedDeliveryBoy
         })
 
-        return res.status(200).json({ message: "Order Delivered Successfully" })
+        await order.populate("shopOrders.shop")
+        const io = req.app.get('io')
+        if (io) {
+            const fullOrder = await Order.findById(orderId).populate("user", "socketId")
+            const ownerUser = await User.findById(shopOrder.owner)
+            if (ownerUser?.socketId) {
+                io.to(ownerUser.socketId).emit('update-status', {
+                    orderId: order._id,
+                    shopId: String(shopOrder.shop._id),
+                    status: "delivered",
+                    userId: shopOrder.owner
+                })
+            }
+        }
+
+        return res.status(200).json({ message: "Order Delivered Successfully !" })
     } catch (error) {
         return res.status(500).json({ message: `verify delivery otp error ${error}` })
+    }
+}
+
+
+export const getTodayDeliveries = async (req,res) => {
+    try {
+        const deliveryBoyId= req.userId
+        const startsOfDay= new Date()
+        startsOfDay.setHours(0,0,0,0)
+
+        const orders = await Order.find({
+            "shopOrders.assignedDeliveryBoy":deliveryBoyId,
+            "shopOrders.status":"delivered",
+            "shopOrders.deliveredAt":{$gte:startsOfDay}
+        }).lean()
+
+        let todaysDeliveries = []
+
+        orders.forEach(order => {
+            order.shopOrders.forEach(shopOrder =>{
+                if(shopOrder.assignedDeliveryBoy==deliveryBoyId && 
+                    shopOrder.status=="delivered" && 
+                    shopOrder.deliveredAt &&
+                    shopOrder.deliveredAt>= startsOfDay
+                ){
+                    todaysDeliveries.push(shopOrder)
+                }
+            })
+        })
+
+        let stats={}
+
+        todaysDeliveries.forEach(shopOrder=>{
+            const hour = new Date(shopOrder.deliveredAt).getHours()
+            stats[hour] = (stats[hour] || 0) + 1
+        })
+
+        let formattedStats = Object.keys(stats).map(hour=>({
+            hour:parseInt(hour),
+            count:stats[hour]
+        }))
+
+        formattedStats.sort((a,b)=>a.hour-b.hour)
+
+        return res.status(200).json(formattedStats)
+
+
+    } catch (error) {
+        return res.status(500).json({message:`todays deliveries error ${error}`})
     }
 }

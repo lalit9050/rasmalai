@@ -22,7 +22,7 @@ import useUpdateLocation from './hooks/useUpdateLocation'
 import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
-import { setSocket } from './redux/userSlice'
+import { setSocket, addMyOrder, updateRealtimeOrderStatus,assignDeliveryBoy } from './redux/userSlice'
 
 export const serverUrl="http://localhost:8000"
 
@@ -46,6 +46,23 @@ function App() {
         socketInstance.emit('identity',{userId:userData._id})
       }
     })
+    socketInstance.on('newOrder', (data) => {
+          console.log("newOrder received:", data)
+
+        if (userData?.role === 'owner' && data.shopOrders?.owner._id == userData._id) {
+            dispatch(addMyOrder(data))
+        }
+    })
+    socketInstance.on('update-status', ({ orderId, shopId, status, userId }) => {
+    if (userId == userData?._id) {
+        dispatch(updateRealtimeOrderStatus({ orderId, shopId, status }))
+    }
+})
+
+    socketInstance.on('delivery-boy-assigned', ({ orderId, shopId, deliveryBoy }) => {
+    dispatch(assignDeliveryBoy({ orderId, shopId, deliveryBoy }))
+})
+
     return ()=>{
       socketInstance.disconnect()
     }
