@@ -27,6 +27,33 @@ function Nav() {
         o.shopOrders?.status !== "delivered"
     ).length || 0
 
+    // Auto-detect city on first login
+    useEffect(() => {
+        if (!currentCity && userData?.role === "user") {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords
+                    try {
+                        const res = await axios.get(
+                            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                        )
+                        const city =
+                            res.data.address.city ||
+                            res.data.address.town ||
+                            res.data.address.village ||
+                            res.data.address.county
+                        if (city) dispatch(setCurrentCity(city))
+                    } catch (err) {
+                        console.log("City fetch failed", err)
+                    }
+                },
+                (err) => {
+                    console.log("Location denied", err)
+                }
+            )
+        }
+    }, [userData])
+
     const handleLogOut = async () => {
         try {
             await axios.get(`${serverUrl}/api/auth/siqnout`, { withCredentials: true })
@@ -78,7 +105,7 @@ function Nav() {
             {showSearch && userData.role == "user" && (
                 <div className="w-[90%] h-[70px] bg-white shadow-xl rounded-lg fixed top-[80px] left-[5%] md:hidden flex items-center gap-[20px]">
 
-                    {/* Mobile city section - inlined */}
+                    {/* Mobile city section */}
                     <div
                         className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-2 border-gray-200 cursor-pointer group"
                         onClick={!editingCity ? handleCityClick : undefined}
@@ -98,7 +125,7 @@ function Nav() {
                             />
                         ) : (
                             <div className="w-[80%] truncate text-gray-500 font-medium text-sm group-hover:text-[#ff4d2d] transition-colors">
-                                {currentCity}
+                                {currentCity || "Detecting..."}
                             </div>
                         )}
                     </div>
@@ -120,7 +147,7 @@ function Nav() {
             {userData.role == "user" && (
                 <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg hidden md:flex items-center gap-[20px]">
 
-                    {/* Desktop city section - inlined */}
+                    {/* Desktop city section */}
                     <div
                         className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-2 border-gray-200 cursor-pointer group"
                         onClick={!editingCity ? handleCityClick : undefined}
@@ -140,7 +167,7 @@ function Nav() {
                             />
                         ) : (
                             <div className="w-[80%] truncate text-gray-500 font-medium text-sm group-hover:text-[#ff4d2d] transition-colors">
-                                {currentCity}
+                                {currentCity || "Detecting..."}
                             </div>
                         )}
                     </div>
