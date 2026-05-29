@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaLocationDot, FaPlus } from "react-icons/fa6";
 import { IoCartOutline } from "react-icons/io5";
@@ -7,31 +7,35 @@ import { LuReceiptIndianRupee } from "react-icons/lu";
 import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { serverUrl } from "../App";
-import { setSearchItems, setUserData } from "../redux/userSlice";
+import { setSearchItems, setUserData, setCurrentCity } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 
 function Nav() {
-    const { userData, currentCity, cartItems, myOrders} = useSelector((state) => state.user);
+    const { userData, currentCity, cartItems, myOrders } = useSelector((state) => state.user);
     const { myShopData } = useSelector((state) => state.owner);
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
-    const [query,setQuery]= useState("")
+    const [query, setQuery] = useState("")
+    const [editingCity, setEditingCity] = useState(false)
+    const [cityInput, setCityInput] = useState("")
+    const cityInputRef = useRef(null)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const pendingCount = myOrders?.filter(o =>
-    o.shopOrders?.status !== "delivered"
-).length || 0
+        o.shopOrders?.status !== "delivered"
+    ).length || 0
 
     const handleLogOut = async () => {
         try {
-            const result = await axios.get(`${serverUrl}/api/auth/siqnout`, { withCredentials: true })
+            await axios.get(`${serverUrl}/api/auth/siqnout`, { withCredentials: true })
             dispatch(setUserData(null))
         } catch (error) {
             console.log(error)
         }
     }
+
     const handleSearchItems = async () => {
         try {
             const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, { withCredentials: true })
@@ -40,125 +44,150 @@ function Nav() {
             console.log(error)
         }
     }
-    useEffect(()=>{
-        if(query){
-            handleSearchItems()
+
+    const handleCityClick = () => {
+        setCityInput(currentCity || "")
+        setEditingCity(true)
+        setTimeout(() => cityInputRef.current?.focus(), 50)
+    }
+
+    const handleCityChange = () => {
+        const trimmed = cityInput.trim()
+        if (trimmed && trimmed !== currentCity) {
+            dispatch(setCurrentCity(trimmed))
         }
-        else{
+        setEditingCity(false)
+    }
+
+    const handleCityKeyDown = (e) => {
+        if (e.key === "Enter") handleCityChange()
+        if (e.key === "Escape") setEditingCity(false)
+    }
+
+    useEffect(() => {
+        if (query) {
+            handleSearchItems()
+        } else {
             dispatch(setSearchItems(null))
         }
-    },[query])
-    return (
+    }, [query])
+
+    const CitySection = () => (
         <div
-            className="w-full h-[80px] flex items-center justify-between md:justify-center
-    gap-[30px] px-[20px] fixed top-0 z-20 bg-[#fff9f6] overflow-visible"
+            className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-2 border-gray-200 cursor-pointer group"
+            onClick={!editingCity ? handleCityClick : undefined}
+            title="Click to change city"
         >
+            <FaLocationDot size={25} className="text-[#ff4d2d] shrink-0" />
+            {editingCity ? (
+                <input
+                    ref={cityInputRef}
+                    type="text"
+                    value={cityInput}
+                    onChange={(e) => setCityInput(e.target.value)}
+                    onBlur={handleCityChange}
+                    onKeyDown={handleCityKeyDown}
+                    className="w-full text-gray-700 outline-none border-b border-[#ff4d2d] bg-transparent text-sm"
+                    placeholder="Enter city..."
+                />
+            ) : (
+                <div className="w-[80%] truncate text-gray-600 group-hover:text-[#ff4d2d] transition-colors text-sm">
+                    {currentCity}
+                </div>
+            )}
+        </div>
+    )
+
+    return (
+        <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-20 bg-[#fff9f6] overflow-visible">
+
             {showSearch && userData.role == "user" && (
                 <div className="w-[90%] h-[70px] bg-white shadow-xl rounded-lg fixed top-[80px] left-[5%] md:hidden flex items-center gap-[20px]">
-                    <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-2 border-gray-200">
-                        <FaLocationDot size={25} className="text-[#ff4d2d]" />
-                        <div className="w-[80%] truncate text-gray-600">{currentCity}</div>
-                    </div>
+                    <CitySection />
                     <div className="w-[80%] flex items-center gap-[10px]">
                         <FaSearch size={20} className="text-[#ff4d2d]" />
                         <input
                             type="text"
                             placeholder="Search your favorite food"
-                            className="px-[10px] text-gray-700
-                outline-0 w-full "  onChange={(e)=>setQuery(e.target.value)} value={query}
+                            className="px-[10px] text-gray-700 outline-0 w-full"
+                            onChange={(e) => setQuery(e.target.value)} value={query}
                         />
                     </div>
                 </div>
             )}
 
-
             <h1 className="text-3xl font-bold mb-2 text-[#ff4d2d]">Rasmalai</h1>
-            {userData.role == "user" && <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg hidden md:flex items-center gap-[20px]">
-                <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-2 border-gray-200">
-                    <FaLocationDot size={25} className="text-[#ff4d2d]" />
-                    <div className="w-[80%] truncate text-gray-600">{currentCity}</div>
-                </div>
-                <div className="w-[80%] flex items-center gap-[10px]">
-                    <FaSearch size={20} className="text-[#ff4d2d]" />
-                    <input
-                        type="text"
-                        placeholder="Search your favorite food"
-                        className="px-[10px] text-gray-700
-                outline-0 w-full " onChange={(e)=>setQuery(e.target.value)} value={query}
-                    />
-                </div>
-            </div>}
 
-            <div className="flex items-center  gap-4">
-                {userData.role == "user" && (showSearch ? <RxCross2 size={20} className="text-[#ff4d2d] md:hidden " onClick={() => setShowSearch(false)} /> :
-                    <FaSearch size={20} className="text-[#ff4d2d] md:hidden " onClick={() => setShowSearch(true)} />)}
+            {userData.role == "user" && (
+                <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg hidden md:flex items-center gap-[20px]">
+                    <CitySection />
+                    <div className="w-[80%] flex items-center gap-[10px]">
+                        <FaSearch size={20} className="text-[#ff4d2d]" />
+                        <input
+                            type="text"
+                            placeholder="Search your favorite food"
+                            className="px-[10px] text-gray-700 outline-0 w-full"
+                            onChange={(e) => setQuery(e.target.value)} value={query}
+                        />
+                    </div>
+                </div>
+            )}
+
+            <div className="flex items-center gap-4">
+                {userData.role == "user" && (showSearch
+                    ? <RxCross2 size={20} className="text-[#ff4d2d] md:hidden" onClick={() => setShowSearch(false)} />
+                    : <FaSearch size={20} className="text-[#ff4d2d] md:hidden" onClick={() => setShowSearch(true)} />
+                )}
 
                 {userData.role == "owner" ? <>
-                    {myShopData && <> <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full
-                bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={() => navigate("/add-item")}>
-                        <FaPlus size={20} />
-                        <span>Add food items</span>
-                    </button>
-                        <button className="md:hidden flex items-center p-2 cursor-pointer rounded-full
-                    bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={() => navigate("/add-item")}>
+                    {myShopData && <>
+                        <button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={() => navigate("/add-item")}>
                             <FaPlus size={20} />
-                        </button> </>}
+                            <span>Add food items</span>
+                        </button>
+                        <button className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={() => navigate("/add-item")}>
+                            <FaPlus size={20} />
+                        </button>
+                    </>}
 
-                    <div className=" hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg
-                    bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={() => navigate("/my-orders")}>
+                    <div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium" onClick={() => navigate("/my-orders")}>
                         <LuReceiptIndianRupee size={20} />
                         <span>Pending Orders</span>
-                        <span className="absolute  -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] 
-                    rounded-full px-[6px] py:1px">{pendingCount}</span>
+                        <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py:1px">{pendingCount}</span>
                     </div>
-                    <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg 
-                    bg-[#ff4d2d]/10 
-                    text-[#ff4d2d] font-medium">
+                    <div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
                         <LuReceiptIndianRupee size={20} onClick={() => navigate("/my-orders")} />
-                        <span className="absolute  -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] 
-                    rounded-full px-[6px] py:1px">{pendingCount}</span>
+                        <span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py:1px">{pendingCount}</span>
                     </div>
                 </> : (
                     <>
                         {userData.role == "user" &&
                             <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
                                 <IoCartOutline size={25} className="text-[#ff4d2d]" />
-                                <span className="absolute right-[-9px] top-[-12px] text-[#ff4d2d] ">
-                                    {cartItems.length}
-                                </span>
+                                <span className="absolute right-[-9px] top-[-12px] text-[#ff4d2d]">{cartItems.length}</span>
                             </div>}
 
-
-                        <button
-                            className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]
-        text-sm fonr-medium cursor-pointer" onClick={() => navigate("/my-orders")}
-                        >
+                        <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium cursor-pointer" onClick={() => navigate("/my-orders")}>
                             My Orders
                         </button>
                     </>
                 )}
 
-
-
                 <div
-                    className="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-[#ff4d2d] 
-        text-white text-[18px] shadow-xl font-semibold cursor-pointer"
+                    className="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-[#ff4d2d] text-white text-[18px] shadow-xl font-semibold cursor-pointer"
                     onClick={() => setShowInfo((prev) => !prev)}
                 >
                     {userData?.fullName.slice(0, 1)}
                 </div>
+
                 {showInfo && (
-                    <div
-                        className={`fixed top-[80px] right-[10px] ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[40%]" : "md:right-[10%] lg:right-[25%]"} w-[180px] bg-white
-        shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-20`}
-                    >
+                    <div className={`fixed top-[80px] right-[10px] ${userData.role == "deliveryBoy" ? "md:right-[20%] lg:right-[40%]" : "md:right-[10%] lg:right-[25%]"} w-[180px] bg-white shadow-2xl rounded-xl p-[20px] flex flex-col gap-[10px] z-20`}>
                         <div className="text-[17px] font-semibold">{userData.fullName}</div>
                         {userData.role == "user" &&
                             <div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer" onClick={() => navigate("/my-orders")}>
                                 My Orders
                             </div>
                         }
-
                         <div className="font-semibold text-[#ff4d2d] cursor-pointer" onClick={handleLogOut}>
                             Log Out
                         </div>
