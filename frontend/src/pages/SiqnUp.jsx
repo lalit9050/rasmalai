@@ -191,7 +191,7 @@ function SiqnUp() {
         <button className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white
           hover:bg-[#e64323] cursor-pointer`} onClick={handleSiqnUp} disabled={loading}>
           {
-            loading ? <ClipLoader size={20} color="white"/> : "Siqn Up"
+            loading ? <ClipLoader size={20} color="white"/> : "Sign Up"
           }
           
         </button>
@@ -201,11 +201,11 @@ function SiqnUp() {
         <button className='w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2
         transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer' onClick={handleGoogleAuth}>
           <FcGoogle size={20} />
-          <span>Siqn up with Google</span>
+          <span>Sign up with Google</span>
         </button>
         
         <p className="text-center mt-6 cursor-pointer" onClick={()=>navigate("/siqnin")}>
-          Already have an account ? <span className="text-[#ff4d2d]">Siqn In</span>
+          Already have an account ? <span className="text-[#ff4d2d]">Sign In</span>
         </p>
         
 
