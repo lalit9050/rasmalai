@@ -512,6 +512,7 @@ export const sendDeliveryOtp = async (req, res) => {
         return res.status(200).json({ message: `OTP sent successfully to ${order.user.fullName}` })
 
     } catch (error) {
+        console.error("DELIVERY OTP ERROR:", error) 
         return res.status(500).json({ message: `delivery otp error ${error}` })
     }
 }
