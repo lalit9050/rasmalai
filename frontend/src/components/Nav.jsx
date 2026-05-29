@@ -93,7 +93,7 @@ function Nav() {
                                 onChange={(e) => setCityInput(e.target.value)}
                                 onBlur={handleCityChange}
                                 onKeyDown={handleCityKeyDown}
-                                className="w-full text-gray-700 font-bold outline-none border-b border-[#ff4d2d] bg-transparent text-base"
+                                className="w-full text-gray-500 font-medium outline-none border-b border-[#ff4d2d] bg-transparent text-sm"
                                 placeholder="Enter city..."
                             />
                         ) : (
@@ -135,7 +135,7 @@ function Nav() {
                                 onChange={(e) => setCityInput(e.target.value)}
                                 onBlur={handleCityChange}
                                 onKeyDown={handleCityKeyDown}
-                                className="w-full text-gray-700 font-bold outline-none border-b border-[#ff4d2d] bg-transparent text-base"
+                                className="w-full text-gray-500 font-medium outline-none border-b border-[#ff4d2d] bg-transparent text-sm"
                                 placeholder="Enter city..."
                             />
                         ) : (
