@@ -97,7 +97,7 @@ function Nav() {
                                 placeholder="Enter city..."
                             />
                         ) : (
-                            <div className="w-[80%] truncate text-gray-700 font-bold text-base group-hover:text-[#ff4d2d] transition-colors">
+                            <div className="w-[80%] truncate text-gray-500 font-medium text-sm group-hover:text-[#ff4d2d] transition-colors">
                                 {currentCity}
                             </div>
                         )}
@@ -139,7 +139,7 @@ function Nav() {
                                 placeholder="Enter city..."
                             />
                         ) : (
-                            <div className="w-[80%] truncate text-gray-700 font-bold text-base group-hover:text-[#ff4d2d] transition-colors">
+                            <div className="w-[80%] truncate text-gray-500 font-medium text-sm group-hover:text-[#ff4d2d] transition-colors">
                                 {currentCity}
                             </div>
                         )}
