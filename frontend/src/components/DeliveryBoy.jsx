@@ -21,8 +21,10 @@ function DeliveryBoy() {
   const [todayDeliveries, setTodayDeliveries] = useState([])
   const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null)
   const [otpError, setOtpError] = useState("")
-  const[loading,setLoading] = useState(false)
-  const[message,setMessage]=useState("")
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
 
   useEffect(() => {
     if (!socket || userData.role !== "deliveryBoy") return
@@ -50,9 +52,9 @@ function DeliveryBoy() {
     }
   }, [socket, userData])
 
-    const ratePerDelivery = 50
-    const totalEarning = todayDeliveries.reduce((sum,d)=>sum + d.count*ratePerDelivery,0)
-  
+  const ratePerDelivery = 50
+  const totalEarning = todayDeliveries.reduce((sum, d) => sum + d.count * ratePerDelivery, 0)
+
 
   const getAssignments = async () => {
     try {
@@ -112,6 +114,28 @@ function DeliveryBoy() {
       } else {
         setOtpError("Something went wrong")
       }
+    }
+  }
+
+  const resendOtp = async () => {
+    setResendLoading(true)
+    setOtpError("")
+    try {
+      await axios.post(`${serverUrl}/api/order/send-delivery-otp`,
+        { orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id },
+        { withCredentials: true }
+      )
+      setResendCooldown(30)
+      const interval = setInterval(() => {
+        setResendCooldown(prev => {
+          if (prev <= 1) { clearInterval(interval); return 0 }
+          return prev - 1
+        })
+      }, 1000)
+    } catch (error) {
+      setOtpError("Failed to resend OTP")
+    } finally {
+      setResendLoading(false)
     }
   }
 
@@ -195,8 +219,8 @@ function DeliveryBoy() {
             />
           </div>
           <div className='max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center'>
-              <h1 className='text-xl font-semibold mb-2 text-gray-800'>Today's Earning</h1>
-              <span className='text-3xl font-bold text-green-600'>₹{totalEarning}</span>
+            <h1 className='text-xl font-semibold mb-2 text-gray-800'>Today's Earning</h1>
+            <span className='text-3xl font-bold text-green-600'>₹{totalEarning}</span>
           </div>
 
         </div>
@@ -249,7 +273,7 @@ function DeliveryBoy() {
               }
             } />
             {!showOtpBox ? <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer' onClick={sendOtp} disabled={loading}>
-              {loading?<ClipLoader size={20} color='white'/>:"Mark As Delivered"}
+              {loading ? <ClipLoader size={20} color='white' /> : "Mark As Delivered"}
             </button> : <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
               <p className='text-sm font-semibold mb-2'>Enter OTP sent to <span className='text-orange-500'>{currentOrder.user.fullName}</span></p>
               <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter OTP' onChange={(e) => {
@@ -257,8 +281,22 @@ function DeliveryBoy() {
                 setOtpError("")
               }} value={otp} />
               {otpError && <p className='text-red-500 text-sm mb-2'>*{otpError}</p>}
-              {message && <p className='text-center text-green-400'>{message}</p> }
+
               
+              <div className='text-right mb-2'>
+                {resendCooldown > 0
+                  ? <span className='text-xs text-gray-400'>Resend OTP in {resendCooldown}s</span>
+                  : <button
+                    onClick={resendOtp}
+                    disabled={resendLoading}
+                    className='text-orange-500 text-xs underline cursor-pointer'
+                  >
+                    {resendLoading ? "Resending..." : "Resend OTP"}
+                  </button>
+                }
+              </div>
+              {message && <p className='text-center text-green-400'>{message}</p>}
+
               <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 tracking-all cursor-pointer' onClick={verifyOtp}>Submit OTP</button>
             </div>}
 
