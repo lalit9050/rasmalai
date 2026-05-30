@@ -34,10 +34,12 @@ function Welcome() {
                 <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '26px', fontWeight: 900, color: '#ff4d2d' }}>Rasmalai</div>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button
+                        className="btn-login"
                         onClick={() => navigate('/siqnin')}
                         style={{ padding: '8px 20px', border: '1.5px solid #ff4d2d', borderRadius: '50px', background: 'transparent', color: '#ff4d2d', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}
                     >Log in</button>
                     <button
+                        className="btn-getstarted"
                         onClick={() => navigate('/siqnup')}
                         style={{ padding: '8px 20px', border: '1.5px solid #ff4d2d', borderRadius: '50px', background: '#ff4d2d', color: '#fff', fontFamily: "'DM Sans', sans-serif", fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}
                     >Get started</button>
@@ -58,10 +60,12 @@ function Welcome() {
                     </p>
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                         <button
+                            className="btn-ordernow"
                             onClick={() => navigate('/siqnup')}
                             style={{ padding: '13px 32px', background: '#ff4d2d', color: '#fff', border: 'none', borderRadius: '50px', fontFamily: "'DM Sans', sans-serif", fontSize: '15px', fontWeight: 500, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,77,45,0.3)' }}
                         >Order now →</button>
                         <button
+                            className="btn-howitworks"
                             onClick={() => document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })}
                             style={{ padding: '13px 32px', background: '#fff', color: '#1a1a1a', border: '1.5px solid #e0e0e0', borderRadius: '50px', fontFamily: "'DM Sans', sans-serif", fontSize: '15px', fontWeight: 500, cursor: 'pointer' }}
                         >How it works</button>
@@ -92,10 +96,10 @@ function Welcome() {
                         {/* ORDER CARD */}
                         <div style={{ background: '#fff9f6', borderRadius: '12px', padding: '10px 12px', border: '1px solid #f5ede9' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                                <div style={{ fontSize: '13px', fontWeight: 500 }}>Chicken Biryani</div>
+                                <div style={{ fontSize: '13px', fontWeight: 500 }}>Rasmalai</div>
                                 <div style={{ fontSize: '10px', background: '#fff0ec', color: '#993C1D', borderRadius: '50px', padding: '2px 8px', border: '1px solid #F0997B' }}>Out for delivery</div>
                             </div>
-                            <div style={{ fontSize: '11px', color: '#aaa', marginBottom: '8px' }}>NH5, Shimla · 1 item · ₹199</div>
+                            <div style={{ fontSize: '11px', color: '#aaa', marginBottom: '8px' }}>Narnaul, Haryana · 1 item · ₹49</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', borderRadius: '8px', padding: '6px 10px', border: '1px solid #e8e8e8' }}>
                                 <span style={{ fontSize: '10px', color: '#aaa' }}>Delivery OTP</span>
                                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#ff4d2d', letterSpacing: '3px' }}>4 2 7 8</span>
@@ -187,7 +191,8 @@ function Welcome() {
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,48px)', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>Hungry? Let's fix that.</h2>
                 <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.8)', marginBottom: '32px', fontWeight: 300 }}>Join thousands ordering every day across India.</p>
                 <button
-                    onClick={() => navigate('/signup')}
+                    className="btn-cta"
+                    onClick={() => navigate('/siqnup')}
                     style={{ padding: '15px 48px', background: '#fff', color: '#ff4d2d', border: 'none', borderRadius: '50px', fontFamily: "'DM Sans', sans-serif", fontSize: '16px', fontWeight: 500, cursor: 'pointer' }}
                 >Get started for free</button>
             </section>
@@ -199,11 +204,21 @@ function Welcome() {
             </footer>
 
             <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-      `}</style>
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.4; }
+                }
+                .btn-login { transition: all 0.2s; }
+                .btn-login:hover { background: #ff4d2d !important; color: #fff !important; }
+                .btn-getstarted { transition: all 0.2s; }
+                .btn-getstarted:hover { background: #e64528 !important; border-color: #e64528 !important; }
+                .btn-ordernow { transition: all 0.2s; }
+                .btn-ordernow:hover { background: #e64528 !important; transform: translateY(-2px); }
+                .btn-howitworks { transition: all 0.2s; }
+                .btn-howitworks:hover { border-color: #ff4d2d !important; color: #ff4d2d !important; }
+                .btn-cta { transition: all 0.2s; }
+                .btn-cta:hover { background: #fff0ec !important; transform: translateY(-2px); }
+            `}</style>
         </div>
     )
 }
