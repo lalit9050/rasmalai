@@ -23,6 +23,7 @@ import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
 import { setSocket, addMyOrder, updateRealtimeOrderStatus,assignDeliveryBoy } from './redux/userSlice'
+import Welcome from './pages/Welcome'
 
 export const serverUrl="https://rasmalai-backend-d2o7.onrender.com"
 
@@ -72,7 +73,7 @@ function App() {
     <Route path='/siqnup' element={!userData?<SiqnUp/>:<Navigate to={"/"}/> } />
     <Route path='/siqnin' element={!userData?<SiqnIn />: <Navigate to={"/"}/>} />
     <Route path='/forgot-password' element={!userData?<ForgotPassword/>: <Navigate to={"/"}/>} />
-    <Route path='/' element={ userData?<Home/>:<Navigate to ={"/siqnin"}/>} />
+    <Route path='/' element={ userData?<Home/>:<Welcome/>} />
     <Route path='/create-edit-shop' element={ userData?<CreateEditShop/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/add-item' element={ userData?<AddItems/>:<Navigate to ={"/siqnin"}/>} />
     <Route path='/edit-item/:itemId' element={ userData?<EditItems/>:<Navigate to ={"/siqnin"}/>} />
