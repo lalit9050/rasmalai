@@ -36,7 +36,7 @@ function App() {
   useGetItemsByCity()
   useGetMyOrders()
 
-  const {userData} = useSelector(state=>state.user)
+  const {userData,isLoading} = useSelector(state=>state.user)
   const dispatch = useDispatch()
 
   useEffect(()=>{
@@ -63,7 +63,7 @@ function App() {
     socketInstance.on('delivery-boy-assigned', ({ orderId, shopId, deliveryBoy }) => {
     dispatch(assignDeliveryBoy({ orderId, shopId, deliveryBoy }))
 })
-
+if(isLoading) return <div>Loading...</div>
     return ()=>{
       socketInstance.disconnect()
     }
