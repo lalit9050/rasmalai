@@ -96,13 +96,13 @@ function Welcome() {
                         {/* ORDER CARD */}
                         <div style={{ background: '#fff9f6', borderRadius: '12px', padding: '10px 12px', border: '1px solid #f5ede9' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                                <div style={{ fontSize: '13px', fontWeight: 500 }}>Rasmalai</div>
+                                <div style={{ fontSize: '13px', fontWeight: 500 }}>Kaju Katli</div>
                                 <div style={{ fontSize: '10px', background: '#fff0ec', color: '#993C1D', borderRadius: '50px', padding: '2px 8px', border: '1px solid #F0997B' }}>Out for delivery</div>
                             </div>
                             <div style={{ fontSize: '11px', color: '#aaa', marginBottom: '8px' }}>Narnaul, Haryana · 1 item · ₹49</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', borderRadius: '8px', padding: '6px 10px', border: '1px solid #e8e8e8' }}>
                                 <span style={{ fontSize: '10px', color: '#aaa' }}>Delivery OTP</span>
-                                <span style={{ fontSize: '13px', fontWeight: 500, color: '#ff4d2d', letterSpacing: '3px' }}>4 2 7 8</span>
+                                <span style={{ fontSize: '13px', fontWeight: 500, color: '#ff4d2d', letterSpacing: '3px' }}>7 6 1 6</span>
                             </div>
                         </div>
                     </div>
