@@ -52,15 +52,17 @@ function UserDashboard() {
   useEffect(() => {
     if (cateScrollRef.current) {
       updateButton(cateScrollRef, setShowLeftCateButton, setShowRightCateButton)
-      updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
+      
+      if (shopScrollRef.current) {  // ← add this check
+        updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
+        shopScrollRef.current.addEventListener('scroll', () => {
+          updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
+        })
+      }
+
       cateScrollRef.current.addEventListener('scroll', () => {
         updateButton(cateScrollRef, setShowLeftCateButton, setShowRightCateButton)
       })
-
-      shopScrollRef.current.addEventListener('scroll', () => {
-        updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
-      })
-
     }
 
     return () => {
@@ -71,7 +73,7 @@ function UserDashboard() {
         updateButton(shopScrollRef, setShowLeftShopButton, setShowRightShopButton)
       })
     }
-  }, [categories])
+  }, [categories,shopsInMyCity])
   return (
     <div className='w-screen min-h-screen flex flex-col gap-5 bg-[#fff9f6] items-center overflow-y-auto'>
       <Nav />
