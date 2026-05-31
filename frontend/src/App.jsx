@@ -105,16 +105,18 @@ function App() {
       }
     })
 
-    if (isLoading) return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff9f6' }}>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '32px', fontWeight: 900, color: '#ff4d2d' }}>Rasmalai</div>
-    </div>
-)
+
 
     return () => {
       socketInstance.disconnect()
     }
   }, [userData?._id])
+
+      if (isLoading) return (
+    <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff9f6' }}>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '32px', fontWeight: 900, color: '#ff4d2d' }}>Rasmalai</div>
+    </div>
+)
 
   return (
     <Routes>
